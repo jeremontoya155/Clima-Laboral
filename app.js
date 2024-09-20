@@ -21,7 +21,7 @@ app.use(session({
 
 // Middleware de autenticación
 function checkAuth(req, res, next) {
-    if (req.session.user && req.session.user === 'admin') {
+    if (req.session.user) {
         next();
     } else {
         res.redirect('/login');
