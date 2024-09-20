@@ -15,6 +15,7 @@
             </div>
             <p class="subtitle">Test de personalidad</p>
         </div>
+        
         <div class="cardContainer">
             <div class="card" onclick="window.location='#identificacion';">
                 <i class="fas fa-book"></i>
@@ -30,49 +31,45 @@
             </div>
         </div>
     </div>
-    <div class="formContainer">
-        <form action="/submit" method="post"> 
-            
 
+    <!-- Verificamos si hay preguntas antes de mostrar el formulario -->
+    <% if (preguntas.length > 0) { %>
+    <div class="formContainer">
+        <form action="/submit" method="post">
             <div id="preguntas-container">
                 <% preguntas.forEach((pregunta, index) => { %>
-                    <div class="pregunta <%= index < 5 ? 'visible' : 'oculta' %>" id="pregunta-<%= index %>">
+                    <div class="pregunta <%= index < 1 ? 'visible' : 'oculta' %>" id="pregunta-<%= index %>">
                         <h3 class="titleQuestion"><%= pregunta.texto %></h3>
                         <div class="opciones">
                             <label for="valor">Estoy de acuerdo</label>
                             <label class="opcion">
                                 <input type="radio" class="estoyDeAcuerdo" name="respuestas[<%= pregunta.id %>]" value="Estoy de acuerdo">
-                                <!-- Usamos un <span> para reemplazar el círculo del radio -->
                                 <span class="custom-radio custom-radio-1"></span>
                             </label>
                             <label class="opcion">
                                 <input type="radio" name="respuestas[<%= pregunta.id %>]" value="En parte de acuerdo">
-                                <!-- <span class="valor">En parte de acuerdo</span> -->
                                 <span class="custom-radio custom-radio-2"></span>
                             </label>
                             <label class="opcion">
                                 <input type="radio" name="respuestas[<%= pregunta.id %>]" value="Neutral">
-                                <!-- <span class="valor">Neutral</span> -->
                                 <span class="custom-radio custom-radio-3"></span>
                             </label>
                             <label class="opcion">
                                 <input type="radio" name="respuestas[<%= pregunta.id %>]" value="En parte en desacuerdo">
-                                <!-- <span class="valor">En parte en desacuerdo</span> -->
-                                <span class="custom-radio  custom-radio-4"></span>
+                                <span class="custom-radio custom-radio-4"></span>
                             </label>
                             <label class="opcion">
                                 <input type="radio" name="respuestas[<%= pregunta.id %>]" value="No estoy de acuerdo">
-                                <!-- <span class="valor">No estoy de acuerdo</span> -->
                                 <span class="custom-radio custom-radio-5"></span>
                             </label>
-                            
                             <label for="valor">No estoy de acuerdo</label>
                         </div>
                     </div>
                 <% }); %>
             </div>
+
             <button id="continuar" style="display: none;" class="btnContinuar">Continuar</button>
-            
+
             <div id="datosPersonales" class="oculta">
                 <div class="identificacion" id="identificacion">
                     <input type="text" id="nombreempleado" name="nombreempleado" placeholder="Ingese su nombre" required>
@@ -83,11 +80,15 @@
                     <textarea id="descripcion" name="descripcion" placeholder="Ingrese una breve descripción"></textarea>
                 </div>
             </div>
-    
+
             <button type="submit" class="oculta btnEnviar" id="enviarBtn">Enviar</button>
         </form>
     </div>
-    
+    <% } else { %>
+        <!-- Si no hay preguntas, mostramos un mensaje o dejamos el espacio vacío -->
+        <p>No hay preguntas disponibles en este momento.</p>
+    <% } %>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const preguntas = document.querySelectorAll('.pregunta');
@@ -96,28 +97,27 @@
             const enviarBtn = document.getElementById('enviarBtn');
             let currentIndex = 0;
             const preguntasPorPagina = 5;
-    
-            // Mostrar solo las primeras 5 preguntas
+
+            // Mostrar solo las primeras preguntas según el caso
             actualizarVisibilidadPreguntas();
-    
-            // Mostrar el botón "Continuar" solo si hay más de 5 preguntas
-            if (preguntas.length > preguntasPorPagina) {
+
+            // Verificar si el número de preguntas es menor o igual a 5
+            if (preguntas.length <= preguntasPorPagina) {
+                continuarBtn.style.display = 'none';
+                datosPersonales.classList.remove('oculta');
+                enviarBtn.classList.remove('oculta');
+            } else {
                 continuarBtn.style.display = 'block';
             }
-    
+
             // Event listener para el botón "Continuar"
             continuarBtn.addEventListener('click', () => {
                 if (verificarRespuestas(currentIndex, preguntasPorPagina)) {
-                    // Incrementar el índice para las siguientes preguntas
                     currentIndex += preguntasPorPagina;
-    
-                    // Actualizar la visibilidad de las preguntas
                     actualizarVisibilidadPreguntas();
-    
-                    // Ocultar el botón "Continuar" si ya no hay más preguntas
+
                     if (currentIndex >= preguntas.length) {
                         continuarBtn.style.display = 'none';
-                        // Mostrar los campos de identificación y el botón de enviar
                         datosPersonales.classList.remove('oculta');
                         enviarBtn.classList.remove('oculta');
                     }
@@ -125,8 +125,15 @@
                     alert("Por favor, responde todas las preguntas antes de continuar.");
                 }
             });
-    
-            // Función para actualizar la visibilidad de las preguntas
+
+            // Event listener para el botón "Enviar"
+            enviarBtn.addEventListener('click', (event) => {
+                if (!verificarRespuestas(currentIndex, preguntas.length - currentIndex)) {
+                    event.preventDefault();
+                    alert("Por favor, responde todas las preguntas antes de enviar.");
+                }
+            });
+
             function actualizarVisibilidadPreguntas() {
                 preguntas.forEach((pregunta, index) => {
                     if (index >= currentIndex && index < currentIndex + preguntasPorPagina) {
@@ -137,33 +144,8 @@
                         pregunta.classList.remove('visible');
                     }
                 });
-    
-                // Añadir funcionalidad de desplazamiento automático solo a las preguntas visibles
-                preguntas.forEach((pregunta, index) => {
-                    if (index >= currentIndex && index < currentIndex + preguntasPorPagina) {
-                        const opciones = pregunta.querySelectorAll('.opcion input[type="radio"]');
-    
-                        opciones.forEach(opcion => {
-                            opcion.addEventListener('change', () => {
-                                // Obtener el índice de la siguiente pregunta visible
-                                const nextPregunta = preguntas[index + 1];
-                                
-                                // Si existe una siguiente pregunta visible, desplazar hacia ella
-                                if (nextPregunta && nextPregunta.classList.contains('visible')) {
-                                    nextPregunta.scrollIntoView({ behavior: 'smooth' });
-                                }
-                            });
-                        });
-                    }
-                });
-                // Redirigir hacia arriba después de mostrar las nuevas preguntas
-                const primeraPreguntaVisible = document.querySelector('.pregunta.visible');
-                if (primeraPreguntaVisible) {
-                    primeraPreguntaVisible.scrollIntoView({ behavior: 'smooth' });
-                }
             }
-    
-            // Función para verificar si todas las preguntas visibles están respondidas
+
             function verificarRespuestas(startIndex, count) {
                 for (let i = startIndex; i < startIndex + count && i < preguntas.length; i++) {
                     const opciones = preguntas[i].querySelectorAll('input[type="radio"]');
@@ -176,7 +158,5 @@
             }
         });
     </script>
-    
-    
 </body>
 </html>

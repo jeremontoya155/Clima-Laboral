@@ -435,3 +435,23 @@ button:hover {
     background-color: #ff6c6c;
 
 }
+
+
+/*alert extra*/
+.alert {
+    padding: 15px;
+    background-color: #f44336; /* Color rojo para la alerta */
+    color: white;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    display: none; /* La alerta está oculta por defecto */
+}
+
+.alert-danger {
+    background-color: #ff4c4c; /* Rojo oscuro para error */
+}
+
+.alert p {
+    margin: 0;
+    font-size: 14px;
+}

@@ -21,7 +21,7 @@ app.use(session({
 
 // Middleware de autenticación
 function checkAuth(req, res, next) {
-    if (req.session.user) {
+    if (req.session.user ) {
         next();
     } else {
         res.redirect('/login');
@@ -47,9 +47,11 @@ app.post('/login', async (req, res) => {
         req.session.user = user.rows[0].username;
         res.redirect('/admin');
     } else {
-        res.send('Usuario o contraseña incorrectos');
+        // Enviamos una respuesta JSON en lugar de redirigir
+        res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
     }
 });
+
 
 // Página de administrador
 app.get('/admin', checkAuth, async (req, res) => {

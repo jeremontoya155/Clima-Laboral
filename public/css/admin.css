@@ -1,0 +1,126 @@
+/* General styles for admin page */
+.containerAdministrador {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.preguntaNueva,
+.preguntaEliminar {
+    margin-bottom: 20px;
+}
+
+.preguntaEliminarSelect,
+.preguntaNuevaInput {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: row wrap;
+    width: 100%;
+}
+
+.preguntaEliminar select,
+.preguntaNuevaInput input {
+    width: 70%;
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.preguntaNuevaInput .btnEnviar,
+.preguntaEliminar .btnEnviar {
+    width: 20%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.preguntaNuevaInput .btnEnviar:hover,
+.preguntaEliminar .btnEnviar:hover {
+    background-color: #45a049;
+}
+
+/* Styles for the received responses section */
+.respuestasRecibidas {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.respuestasRecibidas table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.respuestasRecibidas table th, 
+.respuestasRecibidas table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.respuestasRecibidas table th {
+    background-color: #007c98;
+    color: white;
+}
+
+.respuestasRecibidas table td {
+    background-color: #fff;
+}
+
+.respuestasRecibidas table td.fecha {
+    width: 100px;
+    text-align: center;
+}
+
+.respuestasRecibidas table td.respuestas {
+    width: 300px;
+    vertical-align: top;
+}
+
+.respuestasRecibidas table td.respuestas ul {
+    list-style-type: none;
+    padding-left: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.respuestasRecibidas table td.respuestas ul li {
+    margin-bottom: 10px;
+}
+
+.bannerAdmin {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #59b1c3;
+    padding: 20px;
+    color: white;
+}
+
+.bannerAdmin h1 {
+    margin: 0;
+}
+
+.bannerAdmin a {
+    background-color: #ffafaf;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.bannerAdmin a:hover {
+    background-color: #ff6c6c;
+}

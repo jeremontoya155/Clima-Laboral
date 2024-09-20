@@ -8,7 +8,14 @@
 <body>
     <div class="bodyContainer">
         <div class="containerLogin">
-        <form action="/login" method="post">
+            <!-- Mostrar el mensaje de error si existe el parámetro en la URL -->
+            <% if (typeof error !== 'undefined') { %>
+                <div class="alert alert-danger">
+                    <p>Error: Usuario o contraseña incorrectos.</p>
+                </div>
+            <% } %>
+
+            <form action="/login" method="post">
                 <div class="contenedorAuth">
                     <h1>Login de Administrador</h1>
                     <input type="text" id="username" name="username" placeholder="Usuario" required>
@@ -18,5 +25,13 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Detectar el parámetro "error" en la URL para mostrar la alerta
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('error')) {
+            document.querySelector('.alert').style.display = 'block';
+        }
+    </script>
 </body>
 </html>

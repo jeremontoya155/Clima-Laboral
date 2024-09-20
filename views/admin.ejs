@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Admin - Test de Personalidad</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
     <div class="bannerAdmin">
@@ -15,7 +16,6 @@
             <h2>Agregar Pregunta Nueva</h2>
             <form action="/admin/preguntas" method="post" class="preguntaNuevaInput">
                 <input type="hidden" name="accion" value="agregar">
-                <!-- <label for="texto">Texto de la Pregunta:</label> -->
                 <input type="text" id="texto" name="texto" placeholder="Ingrese una pregunta nueva" required>
                 <button class="btnEnviar" type="submit">Agregar Pregunta</button>
             </form>
@@ -24,10 +24,9 @@
             <h2>Eliminar Pregunta</h2>
             <form action="/admin/preguntas" method="post" class="preguntaEliminarSelect">
                 <input type="hidden" name="accion" value="eliminar">
-                <!-- <label for="id">Seleccionar Pregunta para Eliminar:</label> -->
                 <select id="id" name="id" required>
+                    <option value="">Seleccionar Pregunta para Eliminar</option>
                     <% preguntas.forEach(pregunta => { %>
-                        <option value ="">Seleccionar Pregunta para Eliminar</option>
                         <option value="<%= pregunta.id %>"><%= pregunta.texto %></option>
                     <% }); %>
                 </select>
@@ -35,7 +34,6 @@
             </form>
         </div>
         <div class="respuestasRecibidas">
-
             <h2>Respuestas Recibidas</h2>
             <table>
                 <tr>
@@ -43,16 +41,19 @@
                     <th>Email</th>
                     <th>Teléfono</th>
                     <th>Descripción</th>
-                    <th>Respuestas</th>
                     <th>Fecha</th>
+                    <th>Respuestas</th>
                 </tr>
-                <% respuestas.forEach(respuesta => { %>
+                <% respuestas.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).forEach(respuesta => { %>
                     <tr>
                         <td><%= respuesta.nombreempleado %></td>
                         <td><%= respuesta.email %></td>
                         <td><%= respuesta.telefono %></td>
                         <td><%= respuesta.descripcion %></td>
-                        <td class="fecha"><%= respuesta.created_at %></td>
+                        <td class="fecha">
+                            <!-- Formatear la fecha -->
+                            <%= new Date(respuesta.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
+                        </td>
                         <td class="respuestas">
                             <ul>
                                 <% for (let pregunta in respuesta.respuestas) { %>
@@ -65,6 +66,5 @@
             </table>        
         </div>
     </div>
-    
 </body>
 </html>
