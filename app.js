@@ -91,10 +91,10 @@ app.post('/submit', async (req, res) => {
 
 // Agregar o eliminar preguntas (para el admin)
 app.post('/admin/preguntas', checkAuth, async (req, res) => {
-    const { accion, texto, id } = req.body;
+    const { accion, texto, categoria, id } = req.body;
 
     if (accion === 'agregar') {
-        await pool.query('INSERT INTO preguntas (texto) VALUES ($1)', [texto]);
+        await pool.query('INSERT INTO preguntas (texto, category) VALUES ($1, $2)', [texto, categoria]);
     } else if (accion === 'eliminar' && id) {
         await pool.query('DELETE FROM preguntas WHERE id = $1', [id]);
     }

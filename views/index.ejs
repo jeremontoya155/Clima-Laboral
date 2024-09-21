@@ -31,7 +31,9 @@
             </div>
         </div>
     </div>
-
+    <div class="progress-container">
+        <div id="progress-bar" class="progress-bar">0%</div>
+    </div>
     <!-- Verificamos si hay preguntas antes de mostrar el formulario -->
     <% if (preguntas.length > 0) { %>
     <div class="formContainer">
@@ -91,72 +93,112 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const preguntas = document.querySelectorAll('.pregunta');
-            const continuarBtn = document.getElementById('continuar');
-            const datosPersonales = document.getElementById('datosPersonales');
-            const enviarBtn = document.getElementById('enviarBtn');
-            let currentIndex = 0;
-            const preguntasPorPagina = 5;
+    const preguntas = document.querySelectorAll('.pregunta');
+    const continuarBtn = document.getElementById('continuar');
+    const datosPersonales = document.getElementById('datosPersonales');
+    const enviarBtn = document.getElementById('enviarBtn');
+    const progressBar = document.getElementById('progress-bar');
+    let currentIndex = 0;
+    const preguntasPorPagina = 5;
+    const totalPreguntas = preguntas.length;
 
-            // Mostrar solo las primeras preguntas según el caso
-            actualizarVisibilidadPreguntas();
+    function actualizarBarraProgreso() {
+        const preguntasRespondidas = Array.from(preguntas).filter(pregunta => {
+            const opciones = pregunta.querySelectorAll('input[type="radio"]');
+            return Array.from(opciones).some(opcion => opcion.checked);
+        }).length;
+        const porcentaje = Math.round((preguntasRespondidas / totalPreguntas) * 100);
+        progressBar.style.width = porcentaje + '%';
+        progressBar.textContent = porcentaje + '%';
+    }
 
-            // Verificar si el número de preguntas es menor o igual a 5
-            if (preguntas.length <= preguntasPorPagina) {
-                continuarBtn.style.display = 'none';
-                datosPersonales.classList.remove('oculta');
-                enviarBtn.classList.remove('oculta');
-            } else {
-                continuarBtn.style.display = 'block';
-            }
+    // Event listener para cuando se selecciona una respuesta
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('click', (event) => {
+            actualizarBarraProgreso();
 
-            // Event listener para el botón "Continuar"
-            continuarBtn.addEventListener('click', () => {
-                if (verificarRespuestas(currentIndex, preguntasPorPagina)) {
-                    currentIndex += preguntasPorPagina;
-                    actualizarVisibilidadPreguntas();
+            const currentPregunta = event.target.closest('.pregunta');
+            const nextPregunta = currentPregunta.nextElementSibling;
 
-                    if (currentIndex >= preguntas.length) {
-                        continuarBtn.style.display = 'none';
-                        datosPersonales.classList.remove('oculta');
-                        enviarBtn.classList.remove('oculta');
-                    }
-                } else {
-                    alert("Por favor, responde todas las preguntas antes de continuar.");
-                }
-            });
-
-            // Event listener para el botón "Enviar"
-            enviarBtn.addEventListener('click', (event) => {
-                if (!verificarRespuestas(currentIndex, preguntas.length - currentIndex)) {
-                    event.preventDefault();
-                    alert("Por favor, responde todas las preguntas antes de enviar.");
-                }
-            });
-
-            function actualizarVisibilidadPreguntas() {
-                preguntas.forEach((pregunta, index) => {
-                    if (index >= currentIndex && index < currentIndex + preguntasPorPagina) {
-                        pregunta.classList.add('visible');
-                        pregunta.classList.remove('oculta');
-                    } else {
-                        pregunta.classList.add('oculta');
-                        pregunta.classList.remove('visible');
-                    }
-                });
-            }
-
-            function verificarRespuestas(startIndex, count) {
-                for (let i = startIndex; i < startIndex + count && i < preguntas.length; i++) {
-                    const opciones = preguntas[i].querySelectorAll('input[type="radio"]');
-                    const respondida = Array.from(opciones).some(opcion => opcion.checked);
-                    if (!respondida) {
-                        return false;
-                    }
-                }
-                return true;
+            // Si hay una siguiente pregunta, hacemos scroll hacia ella
+            if (nextPregunta && nextPregunta.classList.contains('pregunta')) {
+                nextPregunta.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
+    });
+
+    function actualizarVisibilidadPreguntas() {
+        preguntas.forEach((pregunta, index) => {
+            if (index >= currentIndex && index < currentIndex + preguntasPorPagina) {
+                pregunta.classList.add('visible');
+                pregunta.classList.remove('oculta');
+            } else {
+                pregunta.classList.add('oculta');
+                pregunta.classList.remove('visible');
+            }
+        });
+        actualizarBarraProgreso();
+        verificarRespuestasYHabilitarBoton();
+    }
+
+    function verificarRespuestasYHabilitarBoton() {
+        const preguntasVisibles = document.querySelectorAll('.pregunta.visible');
+        const todasRespondidas = Array.from(preguntasVisibles).every(pregunta => {
+            const opciones = pregunta.querySelectorAll('input[type="radio"]');
+            return Array.from(opciones).some(opcion => opcion.checked);
+        });
+
+        continuarBtn.disabled = !todasRespondidas;
+    }
+
+    // Mostrar solo las primeras preguntas según el caso
+    actualizarVisibilidadPreguntas();
+
+    // Verificar si el número de preguntas es menor o igual a 5
+    if (preguntas.length <= preguntasPorPagina) {
+        continuarBtn.style.display = 'none';
+        datosPersonales.classList.remove('oculta');
+        enviarBtn.classList.remove('oculta');
+    } else {
+        continuarBtn.style.display = 'block';
+    }
+
+    // Event listener para el botón "Continuar"
+    continuarBtn.addEventListener('click', () => {
+        currentIndex += preguntasPorPagina;
+        actualizarVisibilidadPreguntas();
+        
+        progressBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        if (currentIndex >= preguntas.length) {
+            continuarBtn.style.display = 'none';
+            datosPersonales.classList.remove('oculta');
+            enviarBtn.classList.remove('oculta');
+        }
+    });
+
+    // Event listener para el botón "Enviar"
+    enviarBtn.addEventListener('click', (event) => {
+        const todasRespondidas = Array.from(preguntas).every(pregunta => {
+            const opciones = pregunta.querySelectorAll('input[type="radio"]');
+            return Array.from(opciones).some(opcion => opcion.checked);
+        });
+
+        if (!todasRespondidas) {
+            event.preventDefault();
+            alert("Por favor, responde todas las preguntas antes de enviar.");
+        }
+    });
+
+    // Actualizar la barra de progreso y el estado del botón cuando se selecciona una respuesta
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            actualizarBarraProgreso();
+            verificarRespuestasYHabilitarBoton();
+        });
+        
+    });
+});
     </script>
 </body>
 </html>
