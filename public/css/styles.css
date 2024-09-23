@@ -57,9 +57,6 @@ body {
 .pregunta.visible {
     display: block;
 }
-.oculta {
-    display: none;
-}
 
 .titleContainer{
     display:flex;
@@ -378,7 +375,6 @@ button:hover {
 /* Estilos específicos para el botón Enviar */
 .btnEnviar {
     background-color: #f3bc00;
-    display: none; /* Oculto por defecto */
 }
 
 .btnEnviar:hover {
@@ -388,6 +384,12 @@ button:hover {
 /* Clase para mostrar el botón Enviar cuando sea necesario */
 .btnEnviar.visible {
     display: inline-block;
+}
+.botonEnviar{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content: center;
 }
 
 
@@ -545,3 +547,9 @@ button:hover {
     }
 }
 /* Fin barra */
+
+
+
+.oculta {
+    display: none;
+}
